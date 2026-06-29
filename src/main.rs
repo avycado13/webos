@@ -13,7 +13,7 @@ use webos::println;
 
 
 #[cfg(target_arch = "x86_64")]
-use webos::task::{Task, executor::Executor, keyboard};
+use webos::task::{Task, executor::Executor};
 #[cfg(target_arch = "x86_64")]
 use bootloader::{BootInfo, entry_point};
 
@@ -38,9 +38,29 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     #[cfg(test)]
     test_main();
 
+    // filesystem demo
+    {
+        use webos::fs::FS;
+        let mut fs = FS.lock();
+        fs.create("/hello.txt", b"hello from ramdisk!".to_vec());
+        fs.create("/boot/config", b"verbose=1\n".to_vec());
+        drop(fs);
+
+        let fs = FS.lock();
+        if let Some(data) = fs.read("/hello.txt") {
+            if let Ok(s) = core::str::from_utf8(data) {
+                println!("read /hello.txt: {}", s);
+            }
+        }
+        println!("files:");
+        for name in fs.list() {
+            println!("  {}", name);
+        }
+    }
+
     let mut executor = Executor::new();
     executor.spawn(Task::new(example_task()));
-    executor.spawn(Task::new(keyboard::print_keypresses()));
+    executor.spawn(Task::new(webos::shell::run()));
     executor.run();
 }
 

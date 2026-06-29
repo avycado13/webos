@@ -98,6 +98,19 @@ impl VgaWriter {
         self.column_position = 0;
     }
 
+    pub fn backspace(&mut self) {
+        if self.column_position > 0 {
+            self.column_position -= 1;
+            let row = BUFFER_HEIGHT - 1;
+            let col = self.column_position;
+            let blank = ScreenChar {
+                ascii_character: b' ',
+                color_code: self.color_code,
+            };
+            self.buffer.chars[row][col].write(blank);
+        }
+    }
+
     fn clear_row(&mut self, row: usize) {
         let blank = ScreenChar {
             ascii_character: b' ',
@@ -131,6 +144,13 @@ lazy_static! {
     });
 }
 
+
+pub fn backspace() {
+    use x86_64::instructions::interrupts;
+    interrupts::without_interrupts(|| {
+        VGA_WRITER.lock().backspace();
+    });
+}
 
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;

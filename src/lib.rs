@@ -12,7 +12,9 @@ use core::panic::PanicInfo;
 use wasm_bindgen::prelude::*;
 
 pub mod allocator;
+pub mod fs;
 pub mod platform;
+pub mod shell;
 pub mod task;
 
 /// Prints to the console (VGA on x86, stub on other targets).
