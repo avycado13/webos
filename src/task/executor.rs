@@ -33,6 +33,12 @@ impl Executor {
         }
     }
 
+    pub fn run_to_completion(&mut self) {
+        while !self.tasks.is_empty() {
+            self.run_ready_tasks();
+        }
+    }
+
     fn run_ready_tasks(&mut self) {
         // destructure `self` to avoid borrow checker errors
         let Self {
@@ -62,14 +68,19 @@ impl Executor {
     }
 
     fn sleep_if_idle(&self) {
-        use x86_64::instructions::interrupts::{self, enable_and_hlt};
-
-        interrupts::disable();
-        if self.task_queue.is_empty() {
-            enable_and_hlt();
-        } else {
-            interrupts::enable();
+        #[cfg(target_arch = "x86_64")]
+        {
+            use x86_64::instructions::interrupts::{self, enable_and_hlt};
+            interrupts::disable();
+            if self.task_queue.is_empty() {
+                enable_and_hlt();
+            } else {
+                interrupts::enable();
+            }
         }
+        // on non-x86 targets, spin until a task is ready
+        #[cfg(not(target_arch = "x86_64"))]
+        while self.task_queue.is_empty() {}
     }
 }
 

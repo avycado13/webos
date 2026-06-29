@@ -1,4 +1,4 @@
-use crate::{gdt, hlt_loop, print, println};
+use crate::{gdt, hlt_loop};
 use lazy_static::lazy_static;
 use pic8259::ChainedPics;
 use spin;

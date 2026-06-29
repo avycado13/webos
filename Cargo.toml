@@ -12,18 +12,28 @@ name = "stack_overflow"
 harness = false
 
 [dependencies]
-bootloader = { version = "0.9", features = ["map_physical_memory"] }
-volatile = "0.2.6"
 spin = "0.5.2"
-x86_64 = "0.14.2"
-uart_16550 = "0.6.0"
-pic8259 = "0.10.1"
-pc-keyboard = "0.7.0"
 linked_list_allocator = "0.9.0"
 
 [dependencies.lazy_static]
 version = "1.0"
 features = ["spin_no_std"]
+
+[target.'cfg(target_arch = "x86_64")'.dependencies]
+bootloader = { version = "0.9", features = ["map_physical_memory"] }
+volatile = "0.2.6"
+x86_64 = "0.14.2"
+uart_16550 = "0.6.0"
+pic8259 = "0.10.1"
+pc-keyboard = "0.7.0"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "0.2"
+wee_alloc = "0.4"
+
+[lib]
+name = "webos"
+crate-type = ["cdylib", "rlib"]
 
 [[bin]]
 name = "webos"

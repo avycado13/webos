@@ -8,8 +8,10 @@ use core::{
 };
 
 pub mod executor;
-pub mod keyboard;
 pub mod simple_executor;
+
+#[cfg(target_arch = "x86_64")]
+pub mod keyboard;
 
 pub struct Task {
     id: TaskId,

@@ -1,6 +1,9 @@
 use alloc::alloc::{GlobalAlloc, Layout};
 use core::ptr::null_mut;
+#[cfg(target_arch = "x86_64")]
 use fixed_size_block::FixedSizeBlockAllocator;
+
+#[cfg(target_arch = "x86_64")]
 use x86_64::{
     VirtAddr,
     structures::paging::{
@@ -12,12 +15,20 @@ pub mod bump;
 pub mod fixed_size_block;
 pub mod linked_list;
 
+#[cfg(target_arch = "x86_64")]
 pub const HEAP_START: usize = 0x_4444_4444_0000;
+#[cfg(target_arch = "x86_64")]
 pub const HEAP_SIZE: usize = 100 * 1024; // 100 KiB
 
+#[cfg(target_arch = "x86_64")]
 #[global_allocator]
 static ALLOCATOR: Locked<FixedSizeBlockAllocator> = Locked::new(FixedSizeBlockAllocator::new());
 
+#[cfg(target_arch = "wasm32")]
+#[global_allocator]
+static ALLOCATOR: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+
+#[cfg(target_arch = "x86_64")]
 pub fn init_heap(
     mapper: &mut impl Mapper<Size4KiB>,
     frame_allocator: &mut impl FrameAllocator<Size4KiB>,
