@@ -7,9 +7,9 @@
 extern crate alloc;
 
 use alloc::{boxed::Box, vec::Vec};
-use webos::allocator::HEAP_SIZE;
 use bootloader::{BootInfo, entry_point};
 use core::panic::PanicInfo;
+use webos::allocator::HEAP_SIZE;
 
 entry_point!(main);
 

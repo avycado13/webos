@@ -1,16 +1,19 @@
-#![no_std]
-#![cfg_attr(test, no_main)]
+#![cfg_attr(target_arch = "x86_64", no_std)]
+#![cfg_attr(all(test, target_arch = "x86_64"), no_main)]
 #![feature(custom_test_frameworks)]
 #![cfg_attr(target_arch = "x86_64", feature(abi_x86_interrupt))]
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
 extern crate alloc;
+
+#[cfg(target_arch = "x86_64")]
 use core::panic::PanicInfo;
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
+#[cfg(target_arch = "x86_64")]
 pub mod allocator;
 pub mod fs;
 pub mod platform;
@@ -84,7 +87,7 @@ pub fn test_runner(tests: &[&dyn Testable]) {
     loop {}
 }
 
-pub fn test_panic_handler(info: &PanicInfo) -> ! {
+pub fn test_panic_handler(info: &core::panic::PanicInfo) -> ! {
     serial_println!("[failed]\n");
     serial_println!("Error: {}\n", info);
     #[cfg(target_arch = "x86_64")]
@@ -113,16 +116,11 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen(start)]
 pub fn wasm_start() {
-    use task::{Task, executor::Executor};
-    println!("Hello from WASM!");
-    let mut executor = Executor::new();
-    executor.spawn(Task::new(wasm_example()));
-    executor.run_to_completion();
-}
-
-#[cfg(target_arch = "wasm32")]
-async fn wasm_example() {
-    println!("async number: {}", 42u32);
+    platform::wasm32::init_canvas();
+    println!("WebOS v0.1.0");
+    println!("Type 'help' for available commands.");
+    println!();
+    platform::wasm32::start_shell();
 }
 
 pub fn hlt_loop() -> ! {
@@ -147,8 +145,8 @@ fn test_kernel_main(_boot_info: &'static BootInfo) -> ! {
     hlt_loop();
 }
 
-#[cfg(test)]
+#[cfg(all(test, target_arch = "x86_64"))]
 #[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
+fn panic(info: &core::panic::PanicInfo) -> ! {
     test_panic_handler(info)
 }
