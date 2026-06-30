@@ -1,9 +1,10 @@
-#![no_std]
-#![no_main]
+#![cfg_attr(target_arch = "x86_64", no_std)]
+#![cfg_attr(target_arch = "x86_64", no_main)]
 #![feature(custom_test_frameworks)]
 #![test_runner(webos::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+#[cfg(target_arch = "x86_64")]
 extern crate alloc;
 
 #[cfg(target_arch = "x86_64")]
@@ -11,11 +12,10 @@ use core::panic::PanicInfo;
 #[cfg(target_arch = "x86_64")]
 use webos::println;
 
-
-#[cfg(target_arch = "x86_64")]
-use webos::task::{Task, executor::Executor};
 #[cfg(target_arch = "x86_64")]
 use bootloader::{BootInfo, entry_point};
+#[cfg(target_arch = "x86_64")]
+use webos::task::{Task, executor::Executor};
 
 #[cfg(target_arch = "x86_64")]
 entry_point!(kernel_main);
@@ -64,8 +64,6 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     executor.run();
 }
 
-
-
 #[cfg(target_arch = "x86_64")]
 async fn async_number() -> u32 {
     42
@@ -76,7 +74,6 @@ async fn example_task() {
     let number = async_number().await;
     println!("async number: {}", number);
 }
-
 
 #[cfg(all(not(test), target_arch = "x86_64"))]
 #[panic_handler]
@@ -91,9 +88,11 @@ fn panic(info: &PanicInfo) -> ! {
     webos::test_panic_handler(info)
 }
 
-
 #[cfg(target_arch = "x86_64")]
 #[test_case]
 fn trivial_assertion() {
     assert_eq!(1, 1);
 }
+
+#[cfg(not(target_arch = "x86_64"))]
+fn main() {}

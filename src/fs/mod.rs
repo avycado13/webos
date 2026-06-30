@@ -38,6 +38,15 @@ impl FileSystem {
     pub fn list(&self) -> impl Iterator<Item = &str> {
         self.files.iter().map(|(p, _)| p.as_str())
     }
+
+    pub fn copy(&mut self, from_path: &str, to_path: &str) -> bool {
+        if let Some(pos) = self.files.iter().position(|(p, _)| p == from_path) {
+            self.files.remove(pos);
+            true
+        } else {
+            false
+        }
+    }
 }
 
 lazy_static! {

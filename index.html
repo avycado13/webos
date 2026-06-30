@@ -1,10 +1,30 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head><title>WebOS</title><meta charset="utf-8"></head>
-  <body>
-  <script src="pkg/webos.js"></script>
-  <script>
-    wasm_bindgen("pkg/webos_bg.wasm");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>WebOS</title>
+  <meta charset="utf-8">
+  <style>
+    body {
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 24px;
+      margin: 0;
+    }
+    canvas#vga {
+      display: block;
+      border: 2px solid #333;
+      image-rendering: pixelated;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="vga" tabindex="0"></canvas>
+  <script type="module">
+    import init from "./pkg/webos.js";
+    await init();
   </script>
-  </body>
-  </html>
+</body>
+</html>

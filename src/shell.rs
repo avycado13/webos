@@ -1,11 +1,11 @@
 #[cfg(target_arch = "x86_64")]
-use alloc::string::String;
-#[cfg(target_arch = "x86_64")]
-use crate::{print, println};
+use crate::fs::FS;
 #[cfg(target_arch = "x86_64")]
 use crate::task::keyboard::ScancodeStream;
 #[cfg(target_arch = "x86_64")]
-use crate::fs::FS;
+use crate::{print, println};
+#[cfg(target_arch = "x86_64")]
+use alloc::string::String;
 #[cfg(target_arch = "x86_64")]
 use futures_util::stream::StreamExt;
 #[cfg(target_arch = "x86_64")]

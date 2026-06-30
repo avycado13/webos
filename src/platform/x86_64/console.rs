@@ -4,7 +4,6 @@ use spin::Mutex;
 use uart_16550::{Config, Uart16550Tty, backend::PioBackend};
 use volatile::Volatile;
 
-
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
@@ -137,13 +136,11 @@ lazy_static! {
     });
 }
 
-
 lazy_static! {
     pub static ref SERIAL1: Mutex<Uart16550Tty<PioBackend>> = Mutex::new(unsafe {
         Uart16550Tty::new_port(0x3F8, Config::default()).expect("failed to initialize UART")
     });
 }
-
 
 pub fn backspace() {
     use x86_64::instructions::interrupts;
